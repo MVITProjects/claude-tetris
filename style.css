@@ -33,7 +33,7 @@ body {
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
 }
 
-/* ---- Panel lateral ---- */
+/* ---- Side panel ---- */
 .panel {
   width: 160px;
   display: flex;
@@ -70,7 +70,7 @@ body {
   border-radius: 4px;
 }
 
-/* ---- Controles ---- */
+/* ---- Controls ---- */
 .controls ul {
   list-style: none;
   display: flex;
