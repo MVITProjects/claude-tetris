@@ -13,6 +13,7 @@ const COLORS = [
   '#e57373', // Z - red
   '#90caf9', // J - pale blue
   '#ffb74d', // L - orange
+  '#b0bec5', // N - steel silver (nut)
 ];
 
 const PIECES = [
@@ -24,6 +25,7 @@ const PIECES = [
   [[5,5,0],[0,5,5],[0,0,0]],                  // Z
   [[6,0,0],[6,6,6],[0,0,0]],                  // J
   [[0,0,7],[7,7,7],[0,0,0]],                  // L
+  [[8,8,8],[8,0,8],[8,8,8]],                  // N (nut, hollow center)
 ];
 
 const LINE_SCORES = [0, 100, 300, 500, 800];
@@ -60,7 +62,7 @@ function createBoard() {
 }
 
 function randomPiece() {
-  const type = Math.floor(Math.random() * 7) + 1;
+  const type = Math.floor(Math.random() * (PIECES.length - 1)) + 1;
   const shape = PIECES[type].map(row => [...row]);
   return { type, shape, x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2), y: 0 };
 }
@@ -173,7 +175,18 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
   const color = COLORS[colorIndex];
   context.globalAlpha = alpha ?? 1;
-  context.fillStyle = color;
+  if (colorIndex === 8) {
+    // metallic: diagonal brushed-steel gradient
+    const gx = x * size + 1, gy = y * size + 1, gs = size - 2;
+    const grad = context.createLinearGradient(gx, gy, gx + gs, gy + gs);
+    grad.addColorStop(0, '#eceff1');
+    grad.addColorStop(0.5, '#90a4ae');
+    grad.addColorStop(0.7, '#cfd8dc');
+    grad.addColorStop(1, '#607d8b');
+    context.fillStyle = grad;
+  } else {
+    context.fillStyle = color;
+  }
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
   // highlight
   context.fillStyle = 'rgba(255,255,255,0.12)';
