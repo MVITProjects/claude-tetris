@@ -10,6 +10,10 @@ Vanilla JavaScript Tetris using HTML5 Canvas. No dependencies, no build step, no
 
 Open `index.html` directly in a browser, or serve the directory (e.g. `python3 -m http.server 8000`) and visit `http://localhost:8000`. Reload to see changes.
 
+## CI
+
+`.github/workflows/claude-issue-triage.yml` runs on issue open/edit: Claude labels the issue (type, `area:*`, `priority:*`) and posts/updates a diagnosis comment. Area labels map to parts of `game.js`. Claude workflows authenticate with the `CLAUDE_CODE_OAUTH_TOKEN` repo secret.
+
 ## Architecture
 
 All game logic lives in a single script, `game.js` (`'use strict'`, global scope, no modules). It binds to DOM element IDs defined in `index.html` (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`), so renaming an ID in the HTML requires updating the lookups at the top of `game.js`.
