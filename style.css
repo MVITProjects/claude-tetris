@@ -16,6 +16,8 @@
   --overlay-bg: rgba(10, 10, 20, 0.75);
   --danger: #e57373;
   --grid: #22222e;
+  --highlight: rgba(255, 213, 79, 0.18);
+  --highlight-text: #ffd54f;
 }
 
 [data-theme="light"] {
@@ -36,6 +38,8 @@
   --overlay-bg: rgba(242, 244, 248, 0.8);
   --danger: #d32f2f;
   --grid: #e1e5ee;
+  --highlight: rgba(245, 158, 11, 0.22);
+  --highlight-text: #b45309;
 }
 
 *, *::before, *::after {
@@ -220,4 +224,125 @@ kbd {
 
 #theme-toggle:hover {
   border-color: var(--accent);
+}
+
+/* ---- Leaderboard ---- */
+#start-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--accent);
+}
+
+#start-btn {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+#start-btn:hover {
+  background: var(--accent-hover);
+}
+
+.lb {
+  min-width: 260px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.lb.hidden, .name-entry.hidden {
+  display: none;
+}
+
+.lb h3 {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--label);
+  margin-bottom: 4px;
+}
+
+.lb ol {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lb li {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-align: left;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.lb li.empty {
+  display: block;
+  text-align: center;
+  font-family: inherit;
+}
+
+.lb li.highlight {
+  background: var(--highlight);
+  color: var(--highlight-text);
+  font-weight: 700;
+}
+
+.lb .lb-stats {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text);
+}
+
+.name-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--highlight-text);
+}
+
+.name-row {
+  display: flex;
+  gap: 6px;
+}
+
+#name-input {
+  width: 140px;
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  user-select: text;
+}
+
+#save-score-btn {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: underline;
 }
