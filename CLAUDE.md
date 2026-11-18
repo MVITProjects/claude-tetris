@@ -16,7 +16,7 @@ Open `index.html` directly in a browser, or serve the directory (e.g. `python3 -
 
 ## Architecture
 
-All game logic lives in a single script, `game.js` (`'use strict'`, global scope, no modules). It binds to DOM element IDs defined in `index.html` (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`), so renaming an ID in the HTML requires updating the lookups at the top of `game.js`.
+All game logic lives in a single script, `game.js` (`'use strict'`, global scope, no modules). It binds to DOM element IDs defined in `index.html` (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`, `skin-select`), so renaming an ID in the HTML requires updating the lookups at the top of `game.js`.
 
 - **State** is a set of module-level `let` variables (`board`, `current`, `next`, `score`, `lines`, `level`, `paused`, `gameOver`, `dropInterval`, etc.) reset by `init()`.
 - **Board** is a `ROWS×COLS` (20×10) 2D array; `0` is empty, `1–7` is a piece type index.
@@ -27,3 +27,4 @@ All game logic lives in a single script, `game.js` (`'use strict'`, global scope
 - `collide(shape, ox, oy)` is the single collision check used by movement, rotation, ghost piece (`ghostY`), and spawn/game-over detection.
 
 - **Theme**: colours in `style.css` are CSS variables on `:root` (dark default), overridden by `[data-theme="light"]`. `applyTheme()` in `game.js` sets `data-theme`, caches the `--grid` colour for `drawGrid`, and redraws. Not persisted; always starts dark.
+- **Skins**: `SKINS` in `game.js` (`retro`, `neon`, `pastel`, `pixel`) each define `colors` (index 0 null, 1–8), `boardBg`/`gridColor` (`null` = follow light/dark theme) and `drawBlock(context, px, py, size, color, colorIndex, alpha)`. `applySkin(name)` swaps `activeSkin`/`COLORS`, saves `tetris.skin` to localStorage (try/catch) and redraws immediately. The global `drawBlock(context, x, y, colorIndex, size, alpha)` keeps its signature and delegates to the active skin; `clearCanvas` paints `boardBg`. Skin is orthogonal to the light/dark theme. The `#skin-select` dropdown sits beside `#theme-toggle`.

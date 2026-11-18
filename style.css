@@ -221,3 +221,24 @@ kbd {
 #theme-toggle:hover {
   border-color: var(--accent);
 }
+
+/* ---- Skin selector ---- */
+#skin-select {
+  position: fixed;
+  top: 16px;
+  right: 150px;
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+#skin-select:hover,
+#skin-select:focus-visible {
+  border-color: var(--accent);
+}
