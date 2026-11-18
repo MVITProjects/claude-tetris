@@ -52,6 +52,26 @@
         <button id="restart-btn">Restart</button>
       </div>
     </div>
+    <div id="pause-menu" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+      <div class="overlay-box pause-box">
+        <p id="pause-title">PAUSED</p>
+        <button type="button" id="pause-resume" class="menu-btn">Resume</button>
+        <button type="button" id="pause-restart" class="menu-btn">Restart</button>
+        <label class="menu-row" for="start-level">
+          <span class="label">STARTING LEVEL</span>
+          <select id="start-level"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option></select>
+        </label>
+        <button type="button" id="pause-controls-btn" class="menu-btn secondary" aria-expanded="false" aria-controls="pause-controls">Controls</button>
+        <ul id="pause-controls" class="pause-controls hidden">
+          <li><kbd>←</kbd><kbd>→</kbd> move</li>
+          <li><kbd>↑</kbd> / <kbd>X</kbd> rotate</li>
+          <li><kbd>↓</kbd> soft drop</li>
+          <li><kbd>Space</kbd> hard drop</li>
+          <li><kbd>P</kbd> / <kbd>Esc</kbd> pause / resume</li>
+        </ul>
+        <p class="menu-hint">Starting level applies to the next game.</p>
+      </div>
+    </div>
   </div>
 
   <script src="game.js"></script>

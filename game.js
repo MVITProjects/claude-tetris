@@ -42,6 +42,12 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 const themeToggle = document.getElementById('theme-toggle');
+const pauseMenu = document.getElementById('pause-menu');
+const pauseResumeBtn = document.getElementById('pause-resume');
+const pauseRestartBtn = document.getElementById('pause-restart');
+const pauseControlsBtn = document.getElementById('pause-controls-btn');
+const pauseControlsList = document.getElementById('pause-controls');
+const startLevelSel = document.getElementById('start-level');
 
 let theme = 'dark';
 let gridColor = '#22222e';
@@ -55,6 +61,9 @@ function applyTheme(t) {
   if (current && next) { draw(); drawNext(); }
 }
 
+let startLevel = 1;   // level the current game started on
+let pendingStartLevel = 1; // menu selection; becomes startLevel on next init()
+let resumeGuard = false; // after resume, ignore held/repeating keys until a fresh keydown
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
 function createBoard() {
@@ -121,10 +130,14 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    level = Math.max(startLevel, Math.floor(lines / 10) + 1);
+    dropInterval = intervalForLevel(level);
     updateHUD();
   }
+}
+
+function intervalForLevel(lv) {
+  return Math.max(100, 1000 - (lv - 1) * 90);
 }
 
 function ghostY() {
@@ -254,16 +267,29 @@ function endGame() {
 
 function togglePause() {
   if (gameOver) return;
-  paused = !paused;
-  if (!paused) {
-    lastTime = performance.now();
-    loop(lastTime);
-  } else {
-    cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSED';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
-  }
+  if (paused) resumeGame(); else openPauseMenu();
+}
+
+function openPauseMenu() {
+  paused = true;
+  cancelAnimationFrame(animId);
+  pauseControlsList.classList.add('hidden');
+  pauseControlsBtn.setAttribute('aria-expanded', 'false');
+  startLevelSel.value = String(pendingStartLevel);
+  pauseMenu.classList.remove('hidden');
+  pauseResumeBtn.focus();
+}
+
+function resumeGame() {
+  if (!paused) return;
+  paused = false;
+  resumeGuard = true;
+  pauseMenu.classList.add('hidden');
+  if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+  dropAccum = 0;
+  lastTime = performance.now();
+  cancelAnimationFrame(animId);
+  animId = requestAnimationFrame(loop);
 }
 
 function loop(ts) {
@@ -288,23 +314,37 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  startLevel = pendingStartLevel;
+  level = startLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = intervalForLevel(level);
+  resumeGuard = true;
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  pauseMenu.classList.add('hidden');
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
-  if (paused || gameOver) return;
+  if (e.code === 'KeyP' || e.code === 'Escape') {
+    if (e.repeat) return;
+    // Escape inside the level dropdown closes the list, not the menu
+    if (paused && e.code === 'Escape' && document.activeElement === startLevelSel) { return; }
+    togglePause();
+    return;
+  }
+  if (paused) { trapMenuKeys(e); return; }
+  if (gameOver) return;
+  if (resumeGuard) {
+    if (e.repeat) return; // key held across resume/restart
+    resumeGuard = false;
+  }
   switch (e.code) {
     case 'ArrowLeft':
       if (!collide(current.shape, current.x - 1, current.y)) current.x--;
@@ -327,7 +367,31 @@ document.addEventListener('keydown', e => {
   updateHUD();
 });
 
-restartBtn.addEventListener('click', init);
+restartBtn.addEventListener('click', () => { init(); restartBtn.blur(); });
+
+// Pause menu: block game inputs (keydown returns early while paused) and keep Tab inside the menu
+function trapMenuKeys(e) {
+  if (e.code === 'Tab') {
+    const f = [...pauseMenu.querySelectorAll('button, select')].filter(el => el.offsetParent !== null);
+    const i = f.indexOf(document.activeElement);
+    e.preventDefault();
+    const n = i === -1 ? (e.shiftKey ? f.length - 1 : 0) : (i + (e.shiftKey ? -1 : 1) + f.length) % f.length;
+    f[n].focus();
+  }
+}
+
+pauseResumeBtn.addEventListener('click', resumeGame);
+pauseRestartBtn.addEventListener('click', () => {
+  init();
+  if (document.activeElement) document.activeElement.blur();
+});
+pauseControlsBtn.addEventListener('click', () => {
+  const show = pauseControlsList.classList.toggle('hidden') === false;
+  pauseControlsBtn.setAttribute('aria-expanded', String(show));
+});
+startLevelSel.addEventListener('change', () => {
+  pendingStartLevel = parseInt(startLevelSel.value, 10) || 1;
+});
 
 themeToggle.addEventListener('click', () => {
   applyTheme(theme === 'dark' ? 'light' : 'dark');
