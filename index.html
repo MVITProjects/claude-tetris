@@ -7,7 +7,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <button id="theme-toggle" type="button" aria-label="Toggle light/dark theme">LIGHT MODE</button>
+  <div class="toolbar">
+    <select id="skin-select" aria-label="Skin">
+      <option value="retro">Retro</option>
+      <option value="neon">Neon</option>
+      <option value="pastel">Pastel</option>
+      <option value="pixel">Pixel art</option>
+    </select>
+    <button id="theme-toggle" type="button" aria-label="Toggle light/dark theme">LIGHT MODE</button>
+  </div>
   <h1 class="game-title">TETRIS</h1>
   <div class="wrapper">
     <div class="game-container">

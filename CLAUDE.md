@@ -27,3 +27,4 @@ All game logic lives in a single script, `game.js` (`'use strict'`, global scope
 - `collide(shape, ox, oy)` is the single collision check used by movement, rotation, ghost piece (`ghostY`), and spawn/game-over detection.
 
 - **Theme**: colours in `style.css` are CSS variables on `:root` (dark default), overridden by `[data-theme="light"]`. `applyTheme()` in `game.js` sets `data-theme`, caches the `--grid` colour for `drawGrid`, and redraws. Not persisted; always starts dark.
+- **Skins**: `SKINS` in `game.js` maps retro/neon/pastel/pixel to `{colors, bg, grid?, draw(ctx, px, py, size, color, idx)}`. `drawBlock` delegates to the active skin's `draw`; `applySkin()` switches live and persists the choice in `localStorage` (`tetris-skin`). Selector is `#skin-select`.
