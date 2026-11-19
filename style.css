@@ -38,6 +38,26 @@
   --grid: #e1e5ee;
 }
 
+/* Neon skin: black page and canvases regardless of light/dark theme */
+:root[data-skin="neon"] {
+  --bg: #000000;
+  --panel-bg: #000000;
+  --border: #1a3a4a;
+  --grid: #0c1c24;
+  --text: #d8f6ff;
+  --accent: #00e5ff;
+  --accent-hover: #6ff3ff;
+  --accent-glow: rgba(0, 229, 255, 0.6);
+  --accent-contrast: #000000;
+  --shadow: rgba(0, 229, 255, 0.25);
+  --label: #4f8a9a;
+  --muted: #8fc4d2;
+  --kbd-bg: #06141a;
+  --kbd-border: #1a3a4a;
+  --kbd-text: #8fc4d2;
+  --overlay-bg: rgba(0, 0, 0, 0.8);
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -219,5 +239,34 @@ kbd {
 }
 
 #theme-toggle:hover {
+  border-color: var(--accent);
+}
+
+/* ---- Skin selector ---- */
+.skin-picker {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--label);
+}
+
+#skin-select {
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#skin-select:hover {
   border-color: var(--accent);
 }
