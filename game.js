@@ -48,6 +48,87 @@ const pauseRestartBtn = document.getElementById('pause-restart');
 const pauseControlsBtn = document.getElementById('pause-controls-btn');
 const pauseControlsList = document.getElementById('pause-controls');
 const startLevelSel = document.getElementById('start-level');
+const startOverlay = document.getElementById('start-overlay');
+const startBtn = document.getElementById('start-btn');
+const startLb = document.getElementById('start-lb');
+const overlayLb = document.getElementById('overlay-lb');
+const resetRecordsBtn = document.getElementById('reset-records-btn');
+const nameEntry = document.getElementById('name-entry');
+const nameInput = document.getElementById('name-input');
+
+// ---- Leaderboard (localStorage `tetris.leaderboard`) ----
+const LB_KEY = 'tetris.leaderboard';
+const LB_SIZE = 5;
+let highlightIdx = -1; // index in scores of the row just saved
+
+function loadLeaderboard() {
+  const empty = { scores: [], bestCombo: 0, maxLines: 0 };
+  try {
+    const d = JSON.parse(localStorage.getItem(LB_KEY));
+    if (!d || typeof d !== 'object' || !Array.isArray(d.scores)) return empty;
+    const scores = d.scores
+      .filter(s => s && Number.isFinite(s.score))
+      .map(s => ({ name: String(s.name ?? '').slice(0, 12), score: s.score, lines: s.lines || 0,
+                   level: s.level || 1, combo: s.combo || 0, date: s.date || '' }))
+      .sort((a, b) => b.score - a.score).slice(0, LB_SIZE);
+    return { scores, bestCombo: Number(d.bestCombo) || 0, maxLines: Number(d.maxLines) || 0 };
+  } catch (e) { return empty; }
+}
+
+function saveLeaderboard(lb) {
+  try { localStorage.setItem(LB_KEY, JSON.stringify(lb)); } catch (e) { /* storage unavailable */ }
+}
+
+function qualifies(s) {
+  if (s <= 0) return false;
+  const { scores } = loadLeaderboard();
+  return scores.length < LB_SIZE || s > scores[scores.length - 1].score;
+}
+
+function renderLeaderboard(container, hl) {
+  const lb = loadLeaderboard();
+  container.textContent = '';
+  const h = document.createElement('h3');
+  h.textContent = 'TOP 5';
+  const ol = document.createElement('ol');
+  for (let i = 0; i < LB_SIZE; i++) {
+    const li = document.createElement('li');
+    const s = lb.scores[i];
+    if (!s) { li.className = 'empty'; li.textContent = '---'; }
+    else {
+      if (i === hl) li.className = 'highlight';
+      for (const t of [i + 1, s.name, s.score.toLocaleString()]) {
+        const sp = document.createElement('span');
+        sp.textContent = t;
+        li.appendChild(sp);
+      }
+    }
+    ol.appendChild(li);
+  }
+  const stats = document.createElement('div');
+  stats.className = 'lb-stats';
+  stats.textContent = `Best combo: ${lb.bestCombo}  |  Max lines: ${lb.maxLines}`;
+  container.append(h, ol, stats);
+}
+
+function recordGameStats() {
+  const lb = loadLeaderboard();
+  lb.bestCombo = Math.max(lb.bestCombo, maxCombo);
+  lb.maxLines = Math.max(lb.maxLines, lines);
+  saveLeaderboard(lb);
+}
+
+function submitScore(name) {
+  const lb = loadLeaderboard();
+  const entry = { name: (name || '').trim().slice(0, 12) || 'PLAYER', score, lines, level,
+                  combo: maxCombo, date: new Date().toISOString() };
+  lb.scores.push(entry);
+  lb.scores.sort((a, b) => b.score - a.score);
+  const idx = lb.scores.indexOf(entry);
+  lb.scores = lb.scores.slice(0, LB_SIZE);
+  saveLeaderboard(lb);
+  return idx < LB_SIZE ? idx : -1;
+}
 
 let theme = 'dark';
 let gridColor = '#22222e';
@@ -64,6 +145,7 @@ function applyTheme(t) {
 let startLevel = 1;   // level the current game started on
 let pendingStartLevel = 1; // menu selection; becomes startLevel on next init()
 let resumeGuard = false; // after resume, ignore held/repeating keys until a fresh keydown
+let combo = 0, maxCombo = 0;
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
 function createBoard() {
@@ -128,11 +210,15 @@ function clearLines() {
     }
   }
   if (cleared) {
+    combo++;
+    maxCombo = Math.max(maxCombo, combo);
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
     level = Math.max(startLevel, Math.floor(lines / 10) + 1);
     dropInterval = intervalForLevel(level);
     updateHUD();
+  } else {
+    combo = 0;
   }
 }
 
@@ -262,7 +348,18 @@ function endGame() {
   cancelAnimationFrame(animId);
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Score: ${score.toLocaleString()}`;
+  recordGameStats();
+  if (qualifies(score)) {
+    nameInput.value = 'PLAYER';
+    nameEntry.classList.remove('hidden');
+  } else {
+    nameEntry.classList.add('hidden');
+  }
+  renderLeaderboard(overlayLb, -1);
+  overlayLb.classList.remove('hidden');
+  restartBtn.classList.remove('hidden');
   overlay.classList.remove('hidden');
+  if (!nameEntry.classList.contains('hidden')) { nameInput.focus(); nameInput.select(); }
 }
 
 function togglePause() {
@@ -319,6 +416,8 @@ function init() {
   paused = false;
   gameOver = false;
   dropInterval = intervalForLevel(level);
+  combo = 0;
+  maxCombo = 0;
   resumeGuard = true;
   dropAccum = 0;
   lastTime = performance.now();
@@ -332,6 +431,8 @@ function init() {
 }
 
 document.addEventListener('keydown', e => {
+  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+  if (!gameStarted) return;
   if (e.code === 'KeyP' || e.code === 'Escape') {
     if (e.repeat) return;
     // Escape inside the level dropdown closes the list, not the menu
@@ -367,7 +468,29 @@ document.addEventListener('keydown', e => {
   updateHUD();
 });
 
-restartBtn.addEventListener('click', () => { init(); restartBtn.blur(); });
+restartBtn.addEventListener('click', () => {
+  // don't lose a qualifying score the player never submitted
+  if (gameOver && !nameEntry.classList.contains('hidden')) submitScore(nameInput.value);
+  restartBtn.blur();
+  init();
+});
+
+let gameStarted = false;
+
+startBtn.addEventListener('click', () => {
+  gameStarted = true;
+  startOverlay.classList.add('hidden');
+  startBtn.blur();
+  init();
+});
+
+nameEntry.addEventListener('submit', e => {
+  e.preventDefault();
+  highlightIdx = submitScore(nameInput.value);
+  nameEntry.classList.add('hidden');
+  renderLeaderboard(overlayLb, highlightIdx);
+  restartBtn.focus();
+});
 
 // Pause menu: block game inputs (keydown returns early while paused) and keep Tab inside the menu
 function trapMenuKeys(e) {
@@ -393,6 +516,12 @@ startLevelSel.addEventListener('change', () => {
   pendingStartLevel = parseInt(startLevelSel.value, 10) || 1;
 });
 
+resetRecordsBtn.addEventListener('click', () => {
+  if (!confirm('Reset all saved records?')) return;
+  try { localStorage.removeItem(LB_KEY); } catch (e) { /* ignore */ }
+  renderLeaderboard(startLb, -1);
+});
+
 themeToggle.addEventListener('click', () => {
   applyTheme(theme === 'dark' ? 'light' : 'dark');
   themeToggle.blur(); // keep Space / arrows going to the game
@@ -400,4 +529,5 @@ themeToggle.addEventListener('click', () => {
 
 applyTheme('dark');
 
-init();
+renderLeaderboard(startLb, -1);
+// game starts when the Start button is pressed

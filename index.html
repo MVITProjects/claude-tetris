@@ -49,7 +49,24 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+        <form id="name-entry" class="name-entry hidden" autocomplete="off">
+          <label for="name-input">New high score! Enter your name</label>
+          <div class="name-row">
+            <input id="name-input" type="text" maxlength="12" value="PLAYER" />
+            <button id="save-score-btn" type="submit">Save</button>
+          </div>
+        </form>
+        <div id="overlay-lb" class="lb hidden"></div>
         <button id="restart-btn">Restart</button>
+      </div>
+    </div>
+
+    <div id="start-overlay" class="overlay">
+      <div class="overlay-box">
+        <p id="start-title">TETRIS</p>
+        <div id="start-lb" class="lb"></div>
+        <button id="start-btn" type="button">Start</button>
+        <button id="reset-records-btn" class="link-btn" type="button">Reset records</button>
       </div>
     </div>
     <div id="pause-menu" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pause-title">
