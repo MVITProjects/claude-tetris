@@ -280,10 +280,16 @@ kbd {
 }
 
 /* ---- Theme toggle ---- */
-#theme-toggle {
+.toolbar {
   position: fixed;
   top: 16px;
   right: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+#skin-select,
+#theme-toggle {
   background: var(--panel-bg);
   color: var(--text);
   border: 1px solid var(--border);
@@ -295,6 +301,7 @@ kbd {
   cursor: pointer;
 }
 
+#skin-select:hover,
 #theme-toggle:hover {
   border-color: var(--accent);
 }
