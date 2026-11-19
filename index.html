@@ -53,11 +53,11 @@
       </aside>
     </div>
 
-    <div id="overlay" class="overlay hidden">
+    <div id="overlay" class="overlay">
       <div class="overlay-box">
-        <p id="overlay-title">GAME OVER</p>
+        <p id="overlay-title">TETRIS</p>
         <p id="overlay-score"></p>
-        <div id="pause-menu" class="pause-menu">
+        <div id="pause-menu" class="pause-menu hidden">
           <button id="resume-btn" type="button">Resume</button>
           <button id="controls-btn" type="button" aria-expanded="false">View controls</button>
           <ul id="controls-list" class="hidden">
@@ -72,7 +72,20 @@
             <select id="start-level"></select>
           </label>
         </div>
-        <button id="restart-btn">Restart</button>
+        <form id="name-form" class="name-form hidden" autocomplete="off">
+          <span id="name-prompt">NEW HIGH SCORE! ENTER YOUR NAME</span>
+          <div class="name-row">
+            <input id="name-input" type="text" maxlength="12" placeholder="Name" aria-label="Player name" />
+            <button id="name-save" type="submit">Save</button>
+          </div>
+        </form>
+        <div class="leaderboard">
+          <span class="label">TOP 5</span>
+          <ol id="leaderboard"></ol>
+          <p id="records"></p>
+        </div>
+        <button id="restart-btn">Start</button>
+        <button id="reset-btn" type="button">Reset records</button>
       </div>
     </div>
   </div>
