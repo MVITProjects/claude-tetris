@@ -23,7 +23,8 @@ All game logic lives in a single script, `game.js` (`'use strict'`, global scope
 - `PIECES` and `COLORS` are indexed by the same piece type (1–7); index 0 is `null`. A shape's cell values equal its type index, so the cell value is also the color lookup.
 - **Loop**: `requestAnimationFrame` via `loop(ts)` accumulates elapsed time (`dropAccum`) and drops the piece when it exceeds `dropInterval`.
 - **Rotation** (`tryRotate`) is clockwise matrix rotation with simple horizontal wall kicks `[0, -1, 1, -2, 2]` (not SRS).
-- **Scoring/levels** (`clearLines`): `LINE_SCORES` × level; level = `floor(lines/10)+1`; `dropInterval = max(100, 1000 - (level-1)*90)` ms.
+- **Scoring/levels** (`clearLines`): `LINE_SCORES` × level; level = `startLevel + floor(lines/10)`; `dropInterval = intervalFor(level) = max(100, 1000 - (level-1)*90)` ms.
 - `collide(shape, ox, oy)` is the single collision check used by movement, rotation, ghost piece (`ghostY`), and spawn/game-over detection.
 
 - **Theme**: colours in `style.css` are CSS variables on `:root` (dark default), overridden by `[data-theme="light"]`. `applyTheme()` in `game.js` sets `data-theme`, caches the `--grid` colour for `drawGrid`, and redraws. Not persisted; always starts dark.
+- **Pause menu**: `P`/`Escape` toggles `togglePause()`, which shows `#pause-menu` (Resume, Restart, View controls, Starting level `<select>`) inside the shared overlay. While `paused`, the keydown handler ignores game keys. `startLevel` applies on the next `init()` (Restart).

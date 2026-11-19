@@ -202,6 +202,83 @@ kbd {
   background: var(--accent-hover);
 }
 
+/* ---- Pause menu ---- */
+.hidden {
+  display: none !important;
+}
+
+.pause-menu,
+.menu-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  min-width: 190px;
+}
+
+.menu-btn {
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.menu-btn:hover,
+.menu-btn:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+#resume-btn {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+}
+
+.level-select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  text-align: left;
+}
+
+.level-select select {
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.controls-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.controls-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls-list li span {
+  display: inline-flex;
+  gap: 4px;
+  min-width: 64px;
+}
+
 /* ---- Theme toggle ---- */
 #theme-toggle {
   position: fixed;

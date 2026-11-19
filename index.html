@@ -50,6 +50,28 @@
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
         <button id="restart-btn">Restart</button>
+
+        <div id="pause-menu" class="pause-menu hidden">
+          <div id="pause-main" class="menu-view">
+            <button type="button" id="resume-btn" class="menu-btn">Resume</button>
+            <button type="button" id="pause-restart-btn" class="menu-btn">Restart</button>
+            <button type="button" id="controls-btn" class="menu-btn">View controls</button>
+            <label class="level-select">
+              <span class="label">STARTING LEVEL</span>
+              <select id="start-level"></select>
+            </label>
+          </div>
+          <div id="pause-controls" class="menu-view hidden">
+            <ul class="controls-list">
+              <li><span><kbd>←</kbd><kbd>→</kbd></span> move</li>
+              <li><span><kbd>↑</kbd><kbd>X</kbd></span> rotate</li>
+              <li><span><kbd>↓</kbd></span> soft drop</li>
+              <li><span><kbd>Space</kbd></span> hard drop</li>
+              <li><span><kbd>P</kbd><kbd>Esc</kbd></span> pause / resume</li>
+            </ul>
+            <button type="button" id="controls-back-btn" class="menu-btn">Back</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
